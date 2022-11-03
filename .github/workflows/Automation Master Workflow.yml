@@ -38,17 +38,22 @@ jobs:
       - name: Sync DIS version
         run: echo "todo"  
 
-      - name: Building
-        uses: microsoft/setup-msbuild@v1
+      - name: Prepare Building
+        uses: microsoft/setup-msbuild@v1 
+
+      - name: Building     
         run: |
           nuget restore
           msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ GITHUB_WORKSPACE }}\\Dlls}
+         # msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Debug /p:ReferencePath=\"${{ GITHUB_WORKSPACE }}\\Dlls}
 
       - name: Scan Test Projects
         run: echo "todo" 
 
-      - name: Unit Tests
+      - name: Pepare Unit Tests
         uses: darenm/Setup-VSTest@v1
+
+      - name: Unit Tests
         run: vstest.console.exe **\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx 
 
       - name: Integration Tests
