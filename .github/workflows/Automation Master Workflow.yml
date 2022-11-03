@@ -64,7 +64,7 @@ jobs:
       - name: Building     
         run: |
           nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ github.workspace }}\\Dlls\"
+          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
 
       - name: Scan Test Projects
         run: echo "todo" 
@@ -73,7 +73,7 @@ jobs:
         uses: darenm/Setup-VSTest@v1
 
       - name: Unit Tests
-        run: vstest.console.exe **\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx 
+        run: vstest.console.exe **\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx /FailWhenNoTestsFound:false 
 
       - name: Integration Tests
         run: echo "todo" 
