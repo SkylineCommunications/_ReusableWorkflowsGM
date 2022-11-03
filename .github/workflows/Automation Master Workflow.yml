@@ -23,7 +23,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Initialize
-        run: echo "todo"
+        run: |
+          echo "GITHUB_WORKSPACE" + ${{ env.GITHUB_WORKSPACE }}
+          echo "GITHUB_REF_NAME" + ${{ env.GITHUB_REF_NAME }}
+          echo "GITHUB_RUN_NUMBER" + ${{ env.GITHUB_RUN_NUMBER }}
+          echo "GITHUB_REF_TYPE" + ${{ env.GITHUB_REF_TYPE }}
 
       - name: Detect Solution
         run: echo "todo"
@@ -46,8 +50,7 @@ jobs:
       - name: Building     
         run: |
           nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ env.GITHUB_WORKSPACE }}\\Dlls\"}
-         # msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Debug /p:ReferencePath=\"${{ GITHUB_WORKSPACE }}\\Dlls}
+          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ env.GITHUB_WORKSPACE }}\\Dlls\"
 
       - name: Scan Test Projects
         run: echo "todo" 
