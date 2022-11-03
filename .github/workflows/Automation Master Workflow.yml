@@ -9,9 +9,6 @@ on:
         description: "Artifact ID of uploaded Package if successful."
         value:  ${{ jobs.reusable_workflow_job.outputs.artifact-id }}
     inputs:
-      workspace:
-        required: true
-        type: string
       referenceName:
         required: true
         type: string       
@@ -40,7 +37,7 @@ jobs:
 
       - name: Initialize
         run: |
-          echo "workspace" ${{ inputs.workspace }}
+          echo "workspace" ${{ github.workspace }}
           echo "ref name" ${{ inputs.referenceName }}
           echo "run number" ${{ inputs.runNumber }}
           echo "ref type" ${{ inputs.referenceType }}
@@ -67,7 +64,7 @@ jobs:
       - name: Building     
         run: |
           nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ inputs.workspace }}\\Dlls\"
+          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ github.workspace }}\\Dlls\"
 
       - name: Scan Test Projects
         run: echo "todo" 
