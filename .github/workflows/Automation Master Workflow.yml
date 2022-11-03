@@ -46,7 +46,7 @@ jobs:
       - name: Building     
         run: |
           nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ GITHUB_WORKSPACE }}\\Dlls}
+          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath=\"${{ env.GITHUB_WORKSPACE }}\\Dlls}
          # msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Debug /p:ReferencePath=\"${{ GITHUB_WORKSPACE }}\\Dlls}
 
       - name: Scan Test Projects
@@ -80,9 +80,9 @@ jobs:
           # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
           solution-path: ./AutomationScript.sln
           # The chosen name of the package. E.g. MyPackageName.
-          package-name: ${{ GITHUB_REPOSITORY }} ${{ $GITHUB_REF_NAME }}_B${{ $GITHUB_RUN_NUMBER }}
+          package-name: ${{ env.GITHUB_REPOSITORY }} ${{ env.GITHUB_REF_NAME }}_B${{ env.GITHUB_RUN_NUMBER }}
           # The version number for the package (format A.B.C.D). E.g. 1.0.1.1
-          build-number: ${{ $GITHUB_RUN_NUMBER }}
+          build-number: ${{ env.GITHUB_RUN_NUMBER }}
 
       - name: (Release) Upload dmapp Package
         if: $GITHUB_REF_TYPE == 'tag'
@@ -96,9 +96,9 @@ jobs:
           # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
           solution-path: ./AutomationScript.sln
           # The chosen name of the package. E.g. MyPackageName.
-          package-name: ${{ GITHUB_REPOSITORY }} ${{ $GITHUB_REF_NAME }}
+          package-name: ${{ env.GITHUB_REPOSITORY }} ${{ env.GITHUB_REF_NAME }}
           # The version number for the package (format A.B.C.D). E.g. 1.0.1.1
-          version: ${{ $GITHUB_REF_NAME }}
+          version: ${{ env.GITHUB_REF_NAME }}
 
       - name: Post Actions
         run: echo "todo" 
