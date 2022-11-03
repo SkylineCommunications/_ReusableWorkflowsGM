@@ -68,7 +68,7 @@ jobs:
         run: echo "todo" 
 
       - name: (Development) Upload dmapp Package
-        if: $GITHUB_REF_TYPE == 'branch'
+        if: ${{ env.GITHUB_REF_TYPE }}  == 'branch'
         id: upload-step-development
         # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@release
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
@@ -85,7 +85,7 @@ jobs:
           build-number: ${{ env.GITHUB_RUN_NUMBER }}
 
       - name: (Release) Upload dmapp Package
-        if: $GITHUB_REF_TYPE == 'tag'
+        if: ${{ env.GITHUB_REF_TYPE }} == 'tag'
         id: upload-step-release
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
         with:
