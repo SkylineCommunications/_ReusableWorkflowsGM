@@ -5,8 +5,10 @@ on:
   # Allows you to run this workflow from another workflow
   workflow_call:
     outputs:
-      artifact-id: ${{ jobs.reusable_workflow_job.outputs.artifact-id }}
-
+      artifact-id: 
+        description: "Artifact ID of uploaded Package if successful."
+        value:  ${{ jobs.reusable_workflow_job.outputs.artifact-id }}
+    
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   reusable_workflow_job:
