@@ -28,7 +28,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   validate_skyline_quality_gate:
-    name: CI using 
+    name: Skyline Quality Gate 
     runs-on: windows-latest
 
     outputs:
@@ -92,7 +92,7 @@ jobs:
         run: echo "todo" 
 
   dmapp_creation_registration:
-    name: CI using 
+    name: Dmapp Registration and Upload 
     runs-on: ubuntu-latest
     needs: validate_skyline_quality_gate
 
