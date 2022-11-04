@@ -103,14 +103,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Prepare Building
-        uses: microsoft/setup-msbuild@v1 
-
-      - name: Building     
-        run: |
-          nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
-
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
         id: upload-step-development
