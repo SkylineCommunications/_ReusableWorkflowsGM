@@ -7,10 +7,10 @@ on:
     outputs:
       quality_gate: 
         description: "Results from Skyline Quality Gate."
-        value:  ${{ jobs.validate_skyline_quality_gate.outputs.}}
+        value:  ${{ jobs.validate_skyline_quality_gate.outputs.quality}}
       artifact-id: 
         description: "Artifact ID of uploaded Package if successful."
-        value:  ${{ jobs.reusable_workflow_job.outputs.artifact-id }}
+        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id }}
     inputs:
       referenceName:
         required: true
@@ -32,7 +32,7 @@ jobs:
     runs-on: windows-latest
 
     outputs:
-      artifact-id: ${{ steps.quality-step.outputs.results}}
+      quality: ${{ steps.quality-step.outputs.results}}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -91,7 +91,7 @@ jobs:
       - name: Post Actions
         run: echo "todo" 
 
-  dmapp_creation:
+  dmapp_creation_registration:
     name: CI using 
     runs-on: ubuntu-latest
     needs: validate_skyline_quality_gate
