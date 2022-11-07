@@ -105,6 +105,14 @@ jobs:
       - name: readDir
         run: ls   
 
+      - name: Initialize
+        run: |
+          echo "workspace" ${{ github.workspace }}
+          echo "ref name" ${{ inputs.referenceName }}
+          echo "run number" ${{ inputs.runNumber }}
+          echo "ref type" ${{ inputs.referenceType }}
+          echo "repository" ${{ inputs.repository }}
+
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
         id: upload-step-development
