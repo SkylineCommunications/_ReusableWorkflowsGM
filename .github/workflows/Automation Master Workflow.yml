@@ -102,6 +102,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: readDir
+        run: ls   
+
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
         id: upload-step-development
