@@ -93,7 +93,7 @@ jobs:
   dmapp_creation_registration:
     name: Dmapp Registration and Upload 
     runs-on: ubuntu-latest
-    needs: validate_skyline_quality_gate
+    #needs: validate_skyline_quality_gate
 
     outputs:
       artifact-id: ${{ steps.upload-step-release.outputs.artifact-id }}
