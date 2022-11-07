@@ -27,73 +27,73 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # validate_skyline_quality_gate:
-  #   name: Skyline Quality Gate 
-  #   runs-on: windows-latest
+  validate_skyline_quality_gate:
+    name: Skyline Quality Gate 
+    runs-on: windows-latest
 
-  #   outputs:
-  #     quality: ${{ steps.quality-step.outputs.results}}
+    outputs:
+      quality: ${{ steps.quality-step.outputs.results}}
 
-  #   steps:
-  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #     - uses: actions/checkout@v3
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
 
-  #     - name: Initialize
-  #       run: |
-  #         echo "workspace" ${{ github.workspace }}
-  #         echo "ref name" ${{ inputs.referenceName }}
-  #         echo "run number" ${{ inputs.runNumber }}
-  #         echo "ref type" ${{ inputs.referenceType }}
-  #         echo "repository" ${{ inputs.repository }}
+      - name: Initialize
+        run: |
+          echo "workspace" ${{ github.workspace }}
+          echo "ref name" ${{ inputs.referenceName }}
+          echo "run number" ${{ inputs.runNumber }}
+          echo "ref type" ${{ inputs.referenceType }}
+          echo "repository" ${{ inputs.repository }}
 
-  #     - name: Detect Solution
-  #       run: echo "todo"
+      - name: Detect Solution
+        run: echo "todo"
 
-  #     - name: Validate Solution
-  #       run: echo "todo"
+      - name: Validate Solution
+        run: echo "todo"
 
-  #     - name: Prepare Solution
-  #       run: echo "todo"
+      - name: Prepare Solution
+        run: echo "todo"
 
-  #     - name: Validate Possible Dependency NuGets
-  #       run: echo "todo"
+      - name: Validate Possible Dependency NuGets
+        run: echo "todo"
 
-  #     - name: Sync DIS version
-  #       run: echo "todo"  
+      - name: Sync DIS version
+        run: echo "todo"  
 
-  #     - name: Prepare Building
-  #       uses: microsoft/setup-msbuild@v1 
+      - name: Prepare Building
+        uses: microsoft/setup-msbuild@v1 
 
-  #     - name: Building     
-  #       run: |
-  #         nuget restore
-  #         msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+      - name: Building     
+        run: |
+          nuget restore
+          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
 
-  #     - name: Scan Test Projects
-  #       run: echo "todo" 
+      - name: Scan Test Projects
+        run: echo "todo" 
 
-  #     - name: Pepare Unit Tests
-  #       uses: darenm/Setup-VSTest@v1
+      - name: Pepare Unit Tests
+        uses: darenm/Setup-VSTest@v1
 
-  #     #- name: Unit Tests
-  #       # TODO: Figure out how to handle 'no tests' run: vstest.console.exe *\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx
+      #- name: Unit Tests
+        # TODO: Figure out how to handle 'no tests' run: vstest.console.exe *\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx
 
-  #     - name: Integration Tests
-  #       run: echo "todo" 
+      - name: Integration Tests
+        run: echo "todo" 
 
-  #     - name: SonarQube Analysis
-  #       run: echo "todo" 
+      - name: SonarQube Analysis
+        run: echo "todo" 
 
-  #     - name: Quality Gate
-  #       id: quality-step
-  #       run: echo "results=todo" >> $GITHUB_OUTPUT
+      - name: Quality Gate
+        id: quality-step
+        run: echo "results=todo" >> $GITHUB_OUTPUT
 
-  #     - name: Post Actions
-  #       run: echo "todo" 
+      - name: Post Actions
+        run: echo "todo" 
   dmapp_creation_registration:
     name: Dmapp Registration and Upload 
     runs-on: ubuntu-latest
-    #needs: validate_skyline_quality_gate
+    needs: validate_skyline_quality_gate
 
     outputs:
       artifact-id: ${{ steps.upload-step-release.outputs.artifact-id }}
@@ -124,7 +124,7 @@ jobs:
           # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
           api-key: ${{ secrets.DATAMINER_DEPLOY_KEY }}
           # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
-          solution-path: ./AutomationScriptabcde.sln
+          solution-path: ./AutomationScript.sln
           # The chosen name of the package. E.g. MyPackageName.
           package-name: ${{ inputs.repository }} ${{ inputs.referenceName }}_B${{ inputs.runNumber }}
           # The version number for the package (format A.B.C.D). E.g. 1.0.1.1
