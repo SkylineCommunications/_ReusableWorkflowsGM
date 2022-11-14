@@ -115,16 +115,10 @@ jobs:
           echo "ref type" ${{ inputs.referenceType }}
           echo "repository" ${{ inputs.repository }}
 
-      - name: Prepare Building
-        uses: microsoft/setup-msbuild@v1
-
-      - name: Set up NuGet
-        uses: nuget/setup-nuget@v1.1.1
-
       - name: Building     
         run: |
-          nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+          dotnet restore
+          dotnet build AutomationScript.sln  /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}/Dlls"
 
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
