@@ -118,6 +118,12 @@ jobs:
       - name: Restore NuGet     
         run: dotnet restore
 
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v1.1.1
+      
+      - name: NuGet restore solution
+        run: nuget restore "AutomationScript.sln"
+
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
         id: upload-step-development
