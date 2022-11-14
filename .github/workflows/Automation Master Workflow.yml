@@ -115,10 +115,8 @@ jobs:
           echo "ref type" ${{ inputs.referenceType }}
           echo "repository" ${{ inputs.repository }}
 
-      - name: Building     
-        run: |
-          dotnet restore
-          dotnet build AutomationScript.sln  /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}/Dlls"
+      - name: Restore NuGet     
+        run: dotnet restore
 
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
