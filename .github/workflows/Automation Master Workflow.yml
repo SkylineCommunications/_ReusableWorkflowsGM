@@ -115,14 +115,11 @@ jobs:
           echo "ref type" ${{ inputs.referenceType }}
           echo "repository" ${{ inputs.repository }}
 
-      - name: Restore NuGet     
-        run: dotnet restore --packages ${{ github.workspace }}/packages
-
       - name: Set up NuGet
         uses: nuget/setup-nuget@v1.1.1
       
       - name: NuGet restore solution
-        run: nuget restore "AutomationScript.sln"
+        run: nuget restore "AutomationScript.sln" --packages ${{ github.workspace }}/packages
 
       - name: readDir2
         run: ls   
