@@ -128,7 +128,7 @@ jobs:
         run: ls   
 
       - name: (Development) Upload dmapp Package
-        if: ${{ inputs.referenceType }}  == 'branch'
+        if: inputs.referenceType == 'branch'
         id: upload-step-development
         # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
@@ -145,7 +145,7 @@ jobs:
           build-number: ${{ inputs.runNumber }}
 
       - name: (Release) Upload dmapp Package
-        if: ${{ inputs.referenceType }} == 'tag'
+        if: inputs.referenceType == 'tag'
         id: upload-step-release
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
         with:
