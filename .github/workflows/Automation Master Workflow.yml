@@ -128,7 +128,7 @@ jobs:
         if: inputs.referenceType == 'branch'
         id: upload-step-development
         env:
-          NUGET_PACKAGES: ${{ github.workspace }}
+          NUGET_PACKAGES: ${{ github.workspace }}/packages
         # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
         with:
