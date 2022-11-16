@@ -124,6 +124,9 @@ jobs:
       - name: NuGet restore solution
         run: nuget restore "AutomationScript.sln"
 
+      - name: readDir2
+        run: ls   
+
       - name: (Development) Upload dmapp Package
         if: ${{ inputs.referenceType }}  == 'branch'
         id: upload-step-development
