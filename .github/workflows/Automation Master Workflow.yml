@@ -119,7 +119,7 @@ jobs:
         uses: nuget/setup-nuget@v1.1.1
       
       - name: NuGet restore solution
-        run: nuget restore "AutomationScript.sln" --packages ${{ github.workspace }}/packages
+        run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
 
       - name: readDir2
         run: ls   
