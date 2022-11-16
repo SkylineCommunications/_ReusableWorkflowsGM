@@ -98,7 +98,8 @@ jobs:
     # needs: validate_skyline_quality_gate
 
     outputs:
-      artifact-id: ${{ steps.upload-step-release.outputs.artifact-id }}
+      artifact-id-release: ${{ steps.upload-step-release.outputs.artifact-id }}
+      artifact-id-development: ${{ steps.upload-step-development.outputs.artifact-id }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -160,4 +161,4 @@ jobs:
           version: ${{ inputs.referenceName }}
 
       - name: Post Actions
-        run: echo "todo" 
+        run: echo ${{ outputs.artifact-id-development }}
