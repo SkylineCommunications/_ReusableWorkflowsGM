@@ -127,6 +127,8 @@ jobs:
       - name: (Development) Upload dmapp Package
         if: inputs.referenceType == 'branch'
         id: upload-step-development
+        env:
+          NUGET_PACKAGES: ${{ github.workspace }}
         # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
         with:
