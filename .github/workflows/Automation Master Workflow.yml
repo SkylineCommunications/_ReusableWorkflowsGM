@@ -8,9 +8,12 @@ on:
       quality_gate: 
         description: "Results from Skyline Quality Gate."
         value:  ${{ jobs.validate_skyline_quality_gate.outputs.quality}}
-      artifact-id: 
-        description: "Artifact ID of uploaded Package if successful."
-        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id }}
+      artifact-id-release: 
+        description: "Artifact ID of release uploaded Package if successful."
+        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id-release }}
+      artifact-id-development: 
+        description: "Artifact ID of dev uploaded Package if successful."
+        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id-development }}
     inputs:
       referenceName:
         required: true
@@ -116,11 +119,11 @@ jobs:
           echo "ref type" ${{ inputs.referenceType }}
           echo "repository" ${{ inputs.repository }}
 
-      #- name: Set up NuGet
-      #  uses: nuget/setup-nuget@v1.1.1
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v1.1.1
       
-      #- name: NuGet restore solution
-      #  run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
+      - name: NuGet restore solution
+        run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
 
       - name: readDir2
         run: ls -lR 
