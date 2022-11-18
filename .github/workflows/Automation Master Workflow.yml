@@ -164,4 +164,4 @@ jobs:
           version: ${{ inputs.referenceName }}
 
       - name: Post Actions
-        run: echo  ${{ steps.upload-step-development.outputs.ARTIFACT_ID}}
+        run: echo  ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
