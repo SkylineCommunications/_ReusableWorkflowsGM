@@ -101,8 +101,8 @@ jobs:
     # needs: validate_skyline_quality_gate
 
     outputs:
-      artifact-id-release: ${{ steps.upload-step-release.outputs.artifact-id }}
-      artifact-id-development: ${{ steps.upload-step-development.outputs.artifact-id }}
+      artifact-id-release: ${{ steps.upload-step-release.outputs.ARTIFACT_ID }}
+      artifact-id-development: ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
