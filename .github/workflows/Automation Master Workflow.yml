@@ -65,7 +65,7 @@ jobs:
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
       - name: Unit Tests
-        run: vstest.console.exe *\bin\**\*.UnitTests.dll,**\bin\**\*.Tests.dll,**\bin\**\*Tests.dll /logger:trx
+        run: vstest.console.exe */bin/**/*.UnitTests.dll,**/bin/**/*.Tests.dll,**/bin/**/*Tests.dll /logger:trx
       - name: Integration Tests
         run: echo "todo" 
       - name: SonarQube Analysis
@@ -79,7 +79,7 @@ jobs:
   dmapp_creation_registration:
     name: Dmapp Registration and Upload 
     runs-on: ubuntu-latest
-    # needs: validate_skyline_quality_gate
+    needs: validate_skyline_quality_gate
 
     outputs:
       artifact-id-release: ${{ steps.upload-step-release.outputs.ARTIFACT_ID }}
