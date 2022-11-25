@@ -59,9 +59,9 @@ jobs:
       - name: Restor NuGet
         run: nuget restore
       - name: Building     
-        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
       - name: readDir2
-        run: ls -lR 
+        run: dir /a-D /S /B 
       - name: Scan Test Projects
         run: echo "todo"  
       - name: Prepare Unit Tests
