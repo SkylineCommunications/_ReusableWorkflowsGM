@@ -66,7 +66,7 @@ jobs:
         uses: darenm/Setup-VSTest@v1
       - name: Unit Tests
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx -- RunConfiguration.FailWhenNoTestsFound=true # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
-        run: vstest.console.exe **\bin\**\*TestsTest.dll /logger:trx -- RunConfiguration.FailWhenNoTestsFound=false # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
+        run: vstest.console.exe **\bin\**\*TestsTest.dll /logger:trx -- RunConfiguration.TreatNoTestsAsError=false # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
       - name: Integration Tests
         run: echo "todo" 
       - name: SonarQube Analysis
