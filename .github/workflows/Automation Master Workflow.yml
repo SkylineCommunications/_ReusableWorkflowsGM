@@ -56,7 +56,7 @@ jobs:
         run: echo "todo"  
       - name: Prepare Building
         uses: microsoft/setup-msbuild@v1 
-      - name: Restor NuGet
+      - name: Restore NuGet
         run: nuget restore
       - name: Building     
         run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
