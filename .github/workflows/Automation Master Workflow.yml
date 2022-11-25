@@ -56,10 +56,12 @@ jobs:
         run: echo "todo"  
       - name: Prepare Building
         uses: microsoft/setup-msbuild@v1 
+      - name: Restor NuGet
+        run: nuget restore
       - name: Building     
-        run: |
-          nuget restore
-          msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /verbosity:minimal /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+      - name: readDir2
+        run: ls -lR 
       - name: Scan Test Projects
         run: echo "todo"  
       - name: Prepare Unit Tests
@@ -105,9 +107,6 @@ jobs:
       
       - name: NuGet restore solution
         run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
-
-      - name: readDir2
-        run: ls -lR 
 
       - name: (Development) Upload dmapp Package
         if: inputs.referenceType == 'branch'
