@@ -10,10 +10,10 @@ on:
         value:  ${{ jobs.validate_skyline_quality_gate.outputs.quality}}
       artifact-id-release: 
         description: "Artifact ID of release uploaded Package if successful."
-        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id-release }}
+        value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id-release }}
       artifact-id-development: 
         description: "Artifact ID of dev uploaded Package if successful."
-        value:  ${{ jobs.dmapp_creation_registration.outputs.artifact-id-development }}
+        value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id-development }}
     inputs:
       referenceName:
         required: true
@@ -77,8 +77,8 @@ jobs:
       - name: Post Actions
         run: echo "todo" 
 
-  dmapp_creation_registration:
-    name: Dmapp Registration and Upload 
+  artifact_creation_registration:
+    name: Artifact Registration and Upload 
     runs-on: ubuntu-latest
     needs: validate_skyline_quality_gate
 
@@ -107,7 +107,7 @@ jobs:
       - name: NuGet restore solution
         run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
 
-      - name: (Development) Upload dmapp Package
+      - name: (Development) Upload artifact Package
         if: inputs.referenceType == 'branch'
         id: upload-step-development
         env:
@@ -126,7 +126,7 @@ jobs:
           # The version number for the package (format A.B.C.D). E.g. 1.0.1.1
           build-number: ${{ inputs.runNumber }}
 
-      - name: (Release) Upload dmapp Package
+      - name: (Release) Upload artifact Package
         if: inputs.referenceType == 'tag'
         id: upload-step-release
         uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
