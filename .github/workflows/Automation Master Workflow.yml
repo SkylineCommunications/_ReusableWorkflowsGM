@@ -8,12 +8,12 @@ on:
       quality_gate: 
         description: "Results from Skyline Quality Gate."
         value:  ${{ jobs.validate_skyline_quality_gate.outputs.quality}}
-      artifact-id-release: 
-        description: "Artifact ID of release uploaded Package if successful."
-        value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id-release }}
-      artifact-id-development: 
-        description: "Artifact ID of dev uploaded Package if successful."
-        value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id-development }}
+      #artifact-id-release: 
+      artifact-id: 
+        description: "Artifact ID of uploaded Package if successful."
+        value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id }}
+      # artifact-id-development: 
+      #   description: "Artifact ID of dev uploaded Package if successful."
     inputs:
       referenceName:
         required: true
@@ -83,8 +83,8 @@ jobs:
     needs: validate_skyline_quality_gate
 
     outputs:
-      artifact-id-release: ${{ steps.upload-step-release.outputs.ARTIFACT_ID }}
-      artifact-id-development: ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
+      artifact-id: ${{ steps.upload-step-release.outputs.ARTIFACT_ID }}${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
+      #artifact-id-development: ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
