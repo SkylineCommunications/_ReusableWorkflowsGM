@@ -103,7 +103,10 @@ jobs:
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
         run: |
-          echo "cleanOwner=str.lower( ${{ inputs.owner }})" >> $GITHUB_ENV
+          import os
+          env_file = os.getenv('GITHUB_ENV')
+          with open(env_file, "a") as myfile:
+               myfile.write("cleanOwner=str.lower(${{ inputs.owner }})
         shell: python
 
       - name: Analyze
