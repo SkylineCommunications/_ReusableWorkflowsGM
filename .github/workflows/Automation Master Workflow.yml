@@ -99,12 +99,19 @@ jobs:
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
         run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"**\bin\**\*Tests.dll" -returntargetcode -output:coverage.xml -register:administrator
         continue-on-error: true
+
+      - name: Prepare SonarCloud Variables
+        id: prepSonarCloudVar
+        run: |
+          echo "cleanOwner=str.lower( ${{ inputs.owner }})" >> $GITHUB_ENV
+        shell: python
+
       - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-            .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ inputs.owner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
+            .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
             msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
