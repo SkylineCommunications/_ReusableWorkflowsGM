@@ -27,9 +27,16 @@ on:
       repository:
         required: true
         type: string 
-
+      owner:
+        required: true
+        type: string
+      sonarCloudProjectName:
+        required: true
+        type: string
     secrets:
       api-key:
+        required: true
+      sonarCloudToken:
         required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -48,16 +55,35 @@ jobs:
           echo "run number" ${{ inputs.runNumber }}
           echo "ref type" ${{ inputs.referenceType }}
           echo "repository" ${{ inputs.repository }}
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Install OpenCover
+        run: nuget install OpenCover -OutputDirectory ".\.dotcover"
       - name: Detect Solution
         run: echo "todo"
       - name: Validate Solution
         run: echo "todo"
       - name: Prepare Solution
         run: echo "todo"
-      - name: Validate Possible Dependency NuGets
-        run: echo "todo"
-      - name: Sync DIS version
-        run: echo "todo"  
       - name: Prepare Building
         uses: microsoft/setup-msbuild@v1 
       - name: Restore NuGet
@@ -69,15 +95,40 @@ jobs:
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
       - name: Unit Tests
-        run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
-        #run: vstest.console.exe **\bin\**\*TestsTest.dll /logger:trx -- RunConfiguration.TreatNoTestsAsError=false # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
-      - name: Integration Tests
-        run: echo "todo" 
-      - name: SonarQube Analysis
-        run: echo "todo" 
+        id: unit-tests
+        #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
+        run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"**\bin\**\*Tests.dll" -returntargetcode -output:coverage.xml -register:administrator
+        continue-on-error: true
+      - name: Analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+            .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ inputs.owner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
+            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+            .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        continue-on-error: true
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Quality Gate
         id: quality-step
-        run: echo "results=todo" >> $GITHUB_OUTPUT
+        run: |
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+            print("Quality gate failed due to:")
+          if "${{ steps.unit-tests.outcome }}" == "failure":
+            print("- Test failures")
+          if "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+            print("- Code analysis quality gate failed")
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+            exit(1)
+        shell: python
       - name: Post Actions
         run: echo "todo" 
 
