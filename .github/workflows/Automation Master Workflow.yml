@@ -75,7 +75,15 @@ jobs:
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
-          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
+          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner     
+      - name: Prepare SonarCloud Variables
+        id: prepSonarCloudVar
+        run: |
+          import os
+          env_file = os.getenv('GITHUB_ENV')
+          with open(env_file, "a") as myfile:
+               myfile.write("cleanOwner=str.lower(${{ inputs.owner }})
+        shell: python
       - name: Install OpenCover
         run: nuget install OpenCover -OutputDirectory ".\.dotcover"
       - name: Detect Solution
@@ -99,16 +107,6 @@ jobs:
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
         run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"**\bin\**\*Tests.dll" -returntargetcode -output:coverage.xml -register:administrator
         continue-on-error: true
-
-      - name: Prepare SonarCloud Variables
-        id: prepSonarCloudVar
-        run: |
-          import os
-          env_file = os.getenv('GITHUB_ENV')
-          with open(env_file, "a") as myfile:
-               myfile.write("cleanOwner=str.lower(${{ inputs.owner }})
-        shell: python
-
       - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
