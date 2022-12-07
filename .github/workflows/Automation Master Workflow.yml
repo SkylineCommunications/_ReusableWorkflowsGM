@@ -75,7 +75,10 @@ jobs:
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
-          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner     
+          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Install TestProjectDetector
+        run: |
+          dotnet tool install --tool-path .\.tools\TestProjectDetector Skyline.DataMiner.CICD.Tools.TestProjectDetector --version 1.0.1-Alpha
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
         run: |
@@ -96,12 +99,17 @@ jobs:
         uses: microsoft/setup-msbuild@v1 
       - name: Restore NuGet
         run: nuget restore
-      - name: Building     
+      - name: Building  
         run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
-      - name: Scan Test Projects
-        run: echo "todo"  
+      - name: Detect Unit Tests
+        id: detect-unit-tests
+        run: |
+          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe AutomationScript.sln)" >> $GITHUB_OUTPUT
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
+      - name: Log Test Project Detector Output
+        run: |
+          echo ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutput }}
       - name: Unit Tests
         id: unit-tests
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
