@@ -104,7 +104,7 @@ jobs:
       - name: Detect Unit Tests
         id: detect-unit-tests
         run: |
-          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe AutomationScript.sln)" >> $GITHUB_OUTPUT
+          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $GITHUB_OUTPUT
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
       - name: Log Test Project Detector Output
