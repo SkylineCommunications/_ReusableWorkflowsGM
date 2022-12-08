@@ -106,7 +106,6 @@ jobs:
       - name: Detect Unit Tests
         id: detect-unit-tests
         run: |
-          echo "SELECTED_COLOR=green" >> $env:GITHUB_OUTPUT
           echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $env:GITHUB_OUTPUT
         # .\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln
         # echo "testProjectDetectionOutputTest=test" >> $GITHUB_OUTPUT
@@ -115,7 +114,6 @@ jobs:
         uses: darenm/Setup-VSTest@v1
       - name: Log Test Project Detector Output
         run: |
-          echo "The selected color is ${{ steps.detect-unit-tests.outputs.SELECTED_COLOR }}"
           echo "Detected tests: " ${{ fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error }}
       - name: Test Error
         if: fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error == null
@@ -124,7 +122,8 @@ jobs:
       - name: Test unit test projects
         run: |
           echo ${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}
-          echo "detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}" >> $env:GITHUB_ENV
+          echo "detected-unit-tests=test }}" >> $env:GITHUB_ENV
+        # echo "detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}" >> $env:GITHUB_ENV
         shell: cmd
       - name: Output detected unit tests
         run: |
