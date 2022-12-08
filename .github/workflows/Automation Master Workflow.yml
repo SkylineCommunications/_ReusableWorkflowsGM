@@ -121,9 +121,7 @@ jobs:
           echo "No errors found"
       - name: Test unit test projects
         run: |
-          echo ${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}
-          echo "detected-unit-tests=test }}" >> $env:GITHUB_ENV
-          echo "detected-unit-tests=test2 }}" >> $GITHUB_ENV
+          echo '${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}' >> $env:GITHUB_ENV
         # echo "detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}" >> $env:GITHUB_ENV
         #shell: cmd
       - name: Output detected unit tests
