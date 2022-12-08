@@ -101,7 +101,7 @@ jobs:
         run: nuget restore
       - name: Building  
         run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
-      - name: Run Tests Project Detector
+      - name: Run Test Project Detector
         id: detect-unit-tests
         run: |
           echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $env:GITHUB_OUTPUT
@@ -117,10 +117,10 @@ jobs:
         run: |
           echo 'detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}' >> $env:GITHUB_ENV
       - name: Setup VSTest
-        if: env.detected-unit-tests != 'none'
+        if: env.detected-unit-tests != 'none' && env.detected-unit-tests != ''
         uses: darenm/Setup-VSTest@v1
       - name: Install OpenCover
-        if: env.detected-unit-tests != 'none'
+        if: env.detected-unit-tests != 'none' && env.detected-unit-tests != ''
         run: nuget install OpenCover -OutputDirectory ".\.dotcover"
       # - name: Test Error
       #   if: fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error == null
@@ -135,7 +135,7 @@ jobs:
         #shell: cmd
       - name: Unit Tests
         id: unit-tests
-        if: env.detected-unit-tests != 'none'
+        if: env.detected-unit-tests != 'none' && env.detected-unit-tests != ''
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
         run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"""${{ env.detected-unit-tests }}""" -returntargetcode -output:coverage.xml -register:administrator
         continue-on-error: true
