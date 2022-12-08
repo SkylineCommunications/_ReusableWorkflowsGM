@@ -104,12 +104,12 @@ jobs:
       - name: Detect Unit Tests
         id: detect-unit-tests
         run: |
-          echo "SELECTED_COLOR=green" >> $GITHUB_OUTPUT
+          echo "SELECTED_COLOR=green" >> $env:GITHUB_OUTPUT
         # .\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln
         # echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $GITHUB_OUTPUT
         # echo "testProjectDetectionOutputTest=test" >> $GITHUB_OUTPUT
         # echo "testProjectDetectionOutputTestJson={"val":"value"}" >> $GITHUB_OUTPUT
-        shell: cmd
+        #shell: cmd
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
       - name: Log Test Project Detector Output
@@ -118,7 +118,7 @@ jobs:
         #  echo "Detected tests: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutput }}
         #  echo "Detected tests Test: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTest }}
         #  echo "Detected tests Test json: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTestJson }}
-        shell: cmd
+        #shell: cmd
       # - name: Unit Tests
       #   id: unit-tests
       #   #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
