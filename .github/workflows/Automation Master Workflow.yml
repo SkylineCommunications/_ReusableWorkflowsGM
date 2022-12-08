@@ -114,7 +114,7 @@ jobs:
       - name: Log Test Project Detector Output
         run: |
           echo "The selected color is ${{ steps.detect-unit-tests.outputs.SELECTED_COLOR }}"
-          echo "Detected tests: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutput }}
+          echo "Detected tests: " ${{ fromJson(teps.detect-unit-tests.outputs.testProjectDetectionOutput) }}
         #  echo "Detected tests Test: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTest }}
         #  echo "Detected tests Test json: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTestJson }}
         #shell: cmd
