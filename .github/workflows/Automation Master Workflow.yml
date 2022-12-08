@@ -105,7 +105,7 @@ jobs:
         id: detect-unit-tests
         run: |
           echo "SELECTED_COLOR=green" >> $env:GITHUB_OUTPUT
-          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $GITHUB_OUTPUT
+          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $env:GITHUB_OUTPUT
         # .\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln
         # echo "testProjectDetectionOutputTest=test" >> $GITHUB_OUTPUT
         # echo "testProjectDetectionOutputTestJson={"val":"value"}" >> $GITHUB_OUTPUT
