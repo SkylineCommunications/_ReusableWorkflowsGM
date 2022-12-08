@@ -104,124 +104,126 @@ jobs:
       - name: Detect Unit Tests
         id: detect-unit-tests
         run: |
-          .\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln
-          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $GITHUB_OUTPUT
-          echo "testProjectDetectionOutputTest=test" >> $GITHUB_OUTPUT
-          echo "testProjectDetectionOutputTestJson={"val":"value"}" >> $GITHUB_OUTPUT
+          echo "SELECTED_COLOR=green" >> $GITHUB_OUTPUT
+        # .\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln
+        # echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $GITHUB_OUTPUT
+        # echo "testProjectDetectionOutputTest=test" >> $GITHUB_OUTPUT
+        # echo "testProjectDetectionOutputTestJson={"val":"value"}" >> $GITHUB_OUTPUT
       - name: Prepare Unit Tests
         uses: darenm/Setup-VSTest@v1
       - name: Log Test Project Detector Output
         run: |
-          echo "Detected tests: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutput }}
-          echo "Detected tests Test: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTest }}
-          echo "Detected tests Test json: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTestJson }}
-      - name: Unit Tests
-        id: unit-tests
-        #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
-        run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"**\bin\**\*Tests.dll" -returntargetcode -output:coverage.xml -register:administrator
-        continue-on-error: true
-      - name: Analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-            .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
-            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
-            .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
-        continue-on-error: true
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        with:
-          scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
-        # Force to fail step after specific time.
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.sonarCloudToken }}
-      - name: Quality Gate
-        id: quality-step
-        run: |
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
-            print("Quality gate failed due to:")
-          if "${{ steps.unit-tests.outcome }}" == "failure":
-            print("- Test failures")
-          if "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
-            print("- Code analysis quality gate failed")
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
-            exit(1)
-        shell: python
-      - name: Post Actions
-        run: echo "todo" 
+          echo "The selected color is ${{ steps.detect-unit-tests.outputs.SELECTED_COLOR }}"
+        #  echo "Detected tests: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutput }}
+        #  echo "Detected tests Test: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTest }}
+        #  echo "Detected tests Test json: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTestJson }}
+      # - name: Unit Tests
+      #   id: unit-tests
+      #   #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
+      #   run: .\.dotcover\OpenCover.4.7.1221\tools\OpenCover.Console.exe -target:"vstest.console.exe" -targetargs:"**\bin\**\*Tests.dll" -returntargetcode -output:coverage.xml -register:administrator
+      #   continue-on-error: true
+      # - name: Analyze
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: |
+      #       .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
+      #       msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:ReferencePath="${{ github.workspace }}\Dlls"
+      #       .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
+      #   continue-on-error: true
+      # - name: SonarQube Quality Gate check
+      #   id: sonarqube-quality-gate-check
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
+      #   with:
+      #     scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
+      #   # Force to fail step after specific time.
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.sonarCloudToken }}
+      # - name: Quality Gate
+      #   id: quality-step
+      #   run: |
+      #     if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+      #       print("Quality gate failed due to:")
+      #     if "${{ steps.unit-tests.outcome }}" == "failure":
+      #       print("- Test failures")
+      #     if "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+      #       print("- Code analysis quality gate failed")
+      #     if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+      #       exit(1)
+      #   shell: python
+      # - name: Post Actions
+      #   run: echo "todo" 
 
-  artifact_creation_registration:
-    name: Artifact Registration and Upload 
-    runs-on: ubuntu-latest
-    needs: validate_skyline_quality_gate
-    env:
-      result-artifact-id: none
-    outputs:
-      artifact-id: ${{ env.result-artifact-id }}
-      #artifact-id-development: ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
+  # artifact_creation_registration:
+  #   name: Artifact Registration and Upload 
+  #   runs-on: ubuntu-latest
+  #   needs: validate_skyline_quality_gate
+  #   env:
+  #     result-artifact-id: none
+  #   outputs:
+  #     artifact-id: ${{ env.result-artifact-id }}
+  #     #artifact-id-development: ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
 
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+  #   steps:
+  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  #     - uses: actions/checkout@v3
 
-      - name: readDir
-        run: ls   
+  #     - name: readDir
+  #       run: ls   
 
-      - name: Initialize
-        run: |
-          echo "workspace" ${{ github.workspace }}
-          echo "ref name" ${{ inputs.referenceName }}
-          echo "run number" ${{ inputs.runNumber }}
-          echo "ref type" ${{ inputs.referenceType }}
-          echo "repository" ${{ inputs.repository }}
+  #     - name: Initialize
+  #       run: |
+  #         echo "workspace" ${{ github.workspace }}
+  #         echo "ref name" ${{ inputs.referenceName }}
+  #         echo "run number" ${{ inputs.runNumber }}
+  #         echo "ref type" ${{ inputs.referenceType }}
+  #         echo "repository" ${{ inputs.repository }}
 
-      - name: Set up NuGet
-        uses: nuget/setup-nuget@v1.1.1
+  #     - name: Set up NuGet
+  #       uses: nuget/setup-nuget@v1.1.1
       
-      - name: NuGet restore solution
-        run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
+  #     - name: NuGet restore solution
+  #       run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
 
-      - name: (Development) Upload artifact Package
-        if: inputs.referenceType == 'branch'
-        id: upload-step-development
-        env:
-          NUGET_PACKAGES: ${{ github.workspace }}/packages
-        # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
-        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
-        with:
-          # Stage upload
-          stage: Upload
-          # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
-          api-key: ${{ secrets.api-key }}
-          # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
-          solution-path: ./AutomationScript.sln
-          # The chosen name of the artifact. E.g. MyName.
-          artifact-name: ${{ inputs.repository }} ${{ inputs.referenceName }}_B${{ inputs.runNumber }}
-          # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
-          build-number: ${{ inputs.runNumber }}
-      - name: (Development) Set artifact Id
-        if: inputs.referenceType == 'branch'
-        run: echo "result-artifact-id=${{ steps.upload-step-development.outputs.ARTIFACT_ID }}" >> $GITHUB_ENV
-      - name: (Release) Upload artifact Package
-        if: inputs.referenceType == 'tag'
-        id: upload-step-release
-        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
-        with:
-          # Stage upload
-          stage: Upload
-          # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
-          api-key: ${{ secrets.api-key }}
-          # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
-          solution-path: ./AutomationScript.sln
-          # The chosen name of the artifact. E.g. MyName.
-          artifact-name: ${{ env.GITHUB_REPOSITORY }} ${{ inputs.referenceName }}
-          # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
-          version: ${{ inputs.referenceName }}
-      - name: (Release) Set artifact Id
-        if: inputs.referenceType == 'tag'
-        run: echo "result-artifact-id=${{ steps.upload-step-release.outputs.ARTIFACT_ID }}" >> $GITHUB_ENV
-      - name: Post Actions
-        run: echo  ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
+  #     - name: (Development) Upload artifact Package
+  #       if: inputs.referenceType == 'branch'
+  #       id: upload-step-development
+  #       env:
+  #         NUGET_PACKAGES: ${{ github.workspace }}/packages
+  #       # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
+  #       uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
+  #       with:
+  #         # Stage upload
+  #         stage: Upload
+  #         # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
+  #         api-key: ${{ secrets.api-key }}
+  #         # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
+  #         solution-path: ./AutomationScript.sln
+  #         # The chosen name of the artifact. E.g. MyName.
+  #         artifact-name: ${{ inputs.repository }} ${{ inputs.referenceName }}_B${{ inputs.runNumber }}
+  #         # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
+  #         build-number: ${{ inputs.runNumber }}
+  #     - name: (Development) Set artifact Id
+  #       if: inputs.referenceType == 'branch'
+  #       run: echo "result-artifact-id=${{ steps.upload-step-development.outputs.ARTIFACT_ID }}" >> $GITHUB_ENV
+  #     - name: (Release) Upload artifact Package
+  #       if: inputs.referenceType == 'tag'
+  #       id: upload-step-release
+  #       uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
+  #       with:
+  #         # Stage upload
+  #         stage: Upload
+  #         # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
+  #         api-key: ${{ secrets.api-key }}
+  #         # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
+  #         solution-path: ./AutomationScript.sln
+  #         # The chosen name of the artifact. E.g. MyName.
+  #         artifact-name: ${{ env.GITHUB_REPOSITORY }} ${{ inputs.referenceName }}
+  #         # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
+  #         version: ${{ inputs.referenceName }}
+  #     - name: (Release) Set artifact Id
+  #       if: inputs.referenceType == 'tag'
+  #       run: echo "result-artifact-id=${{ steps.upload-step-release.outputs.ARTIFACT_ID }}" >> $GITHUB_ENV
+  #     - name: Post Actions
+  #       run: echo  ${{ steps.upload-step-development.outputs.ARTIFACT_ID }}
