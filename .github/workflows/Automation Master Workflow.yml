@@ -210,7 +210,7 @@ jobs:
         env:
           NUGET_PACKAGES: ${{ github.workspace }}/packages
         # uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action@UseReusableModuleNuGets
-        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
+        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@main
         with:
           # Stage upload
           stage: Upload
@@ -228,7 +228,7 @@ jobs:
       - name: (Release) Upload artifact Package
         if: inputs.referenceType == 'tag'
         id: upload-step-release
-        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@UseReusableModuleNuGets
+        uses: SkylineCommunications/Skyline-DataMiner-Deploy-Action/Actions/Dockerfile@main
         with:
           # Stage upload
           stage: Upload
