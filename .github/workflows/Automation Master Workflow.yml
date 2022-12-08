@@ -44,6 +44,8 @@ jobs:
   validate_skyline_quality_gate:
     name: Skyline Quality Gate 
     runs-on: windows-latest
+    env:
+      detected-unit-tests: none
     outputs:
       quality: ${{ steps.quality-step.outputs.results}}
     steps:
@@ -116,12 +118,18 @@ jobs:
           echo "The selected color is ${{ steps.detect-unit-tests.outputs.SELECTED_COLOR }}"
           echo "Detected tests: " ${{ fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error }}
       - name: Test Error
-        if : fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error == null
+        if: fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error == null
         run: |
           echo "No errors found"
       - name: Test unit test projects
         run: |
           echo ${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}
+          run: echo "detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}" >> $GITHUB_ENV
+        shell: cmd
+      - name: Output detected unit tests
+        run: |
+          echo ${{ env.detected-unit-tests }}
+        #if: steps.detected-unit-tests.outputs.testProjectDetectionOutput != ""
         #  echo "Detected tests Test: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTest }}
         #  echo "Detected tests Test json: " ${{ steps.detect-unit-tests.outputs.testProjectDetectionOutputTestJson }}
         #shell: cmd
