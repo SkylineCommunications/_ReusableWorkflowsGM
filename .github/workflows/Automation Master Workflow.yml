@@ -119,7 +119,7 @@ jobs:
           echo 'detected-unit-tests=${{ join(fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).UnitTestAssemblies, '"" ""') }}' >> $env:GITHUB_ENV
       - name: Setup VSTest
         if: env.detected-unit-tests != 'none' && env.detected-unit-tests != ''
-        uses: darenm/Setup-VSTest@v1
+        uses: darenm/Setup-VSTest@v1.2
       - name: Install OpenCover
         if: env.detected-unit-tests != 'none' && env.detected-unit-tests != ''
         run: nuget install OpenCover -OutputDirectory ".\.dotcover"
