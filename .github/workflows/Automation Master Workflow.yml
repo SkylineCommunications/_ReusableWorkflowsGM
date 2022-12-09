@@ -106,7 +106,7 @@ jobs:
         id: detect-unit-tests
         run: |
           echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $env:GITHUB_OUTPUT
-      - name: Verify Test Project Detector Output
+      - name: Test Project Detector Output
         if: fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error  != null
         run: |
           print("An error occurred during detection of test projects: ${{ fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error }}")
