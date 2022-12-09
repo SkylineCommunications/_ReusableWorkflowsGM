@@ -101,7 +101,7 @@ jobs:
       - name: Restore NuGet
         run: nuget restore
       - name: Building
-        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release  /p:DefineConstants=\"DCFv1;DBInfo;ALARM_SQUASHING\" /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
+        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release  /p:DefineConstants="DCFv1;DBInfo;ALARM_SQUASHING" /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
       - name: Run Test Project Detector
         id: detect-unit-tests
         run: |
@@ -146,7 +146,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
             .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
-            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:DefineConstants=\"DCFv1;DBInfo;ALARM_SQUASHING\" /p:ReferencePath="${{ github.workspace }}\Dlls"
+            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release /p:DefineConstants="DCFv1;DBInfo;ALARM_SQUASHING" /p:ReferencePath="${{ github.workspace }}\Dlls"
             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
       - name: SonarQube Quality Gate check
