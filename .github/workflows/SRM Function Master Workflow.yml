@@ -101,7 +101,7 @@ jobs:
       # - name: Restore NuGet
       #   run: nuget restore
       - name: Building
-        run: dotnet build -p:DefineConstants=\"DCFv1%3BDBInfo%3BALARM_SQUASHING\" --configuration Release -nodeReuse:false
+        run: dotnet build -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
       - name: Unit Tests
         id: unit-tests
         #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
@@ -114,7 +114,7 @@ jobs:
         run: |
             dotnet tool install --global dotnet-sonarscanner
             dotnet sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**.trx"
-            dotnet build -p:DefineConstants=\"DCFv1%3BDBInfo%3BALARM_SQUASHING\" --configuration Release -nodeReuse:false
+            dotnet build -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
       - name: SonarQube Quality Gate check
