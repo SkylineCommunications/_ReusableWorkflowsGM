@@ -85,8 +85,8 @@ jobs:
           name: NugetPackages
           path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
 
-      - name: Disable NuGet On Build
-        run: dotnet NuGetToggleOnBuild --setToActive false --workspace \"${{ github.workspace }}\" --onlyOnConfiguredNuGet false
+      - name: Disable NuGet Creation on Subsequent Builds
+        run: dotnet NuGetToggleOnBuild --setToActive false --workspace ${{ github.workspace }} --onlyOnConfiguredNuGet false
         
       - name: Unit Tests
         id: unit-tests
@@ -121,7 +121,7 @@ jobs:
           with open(env_file, "a") as myfile:
                myfile.write("lowerCaseOwner=" + str.lower("${{ inputs.owner }}"))
         shell: python
-        
+
       - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
