@@ -8,12 +8,9 @@ on:
       quality_gate: 
         description: "Results from Skyline Quality Gate."
         value:  ${{ jobs.validate_skyline_quality_gate.outputs.quality}}
-      #artifact-id-release: 
       artifact-id: 
         description: "Artifact ID of uploaded Package if successful."
         value:  ${{ jobs.artifact_creation_registration.outputs.artifact-id }}
-      # artifact-id-development: 
-      #   description: "Artifact ID of dev uploaded Package if successful."
     inputs:
       referenceName:
         required: true
@@ -79,32 +76,19 @@ jobs:
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
           dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
-      # - name: Install TestProjectDetector
-      #   run: |
-      #     dotnet tool install --tool-path .\.tools\TestProjectDetector Skyline.DataMiner.CICD.Tools.TestProjectDetector --version 1.0.1-Alpha
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
         run: |
           import os
           env_file = os.getenv('GITHUB_ENV')
           with open(env_file, "a") as myfile:
-               myfile.write("cleanOwner=" + str.lower("${{ inputs.owner }}"))
+               myfile.write("lowerCaseOwner=" + str.lower("${{ inputs.owner }}"))
         shell: python
-      # - name: Detect Solution
-      #   run: echo "todo"
-      # - name: Validate Solution
-      #   run: echo "todo"
-      # - name: Prepare Solution
-      #   run: echo "todo"
-      # - name: Prepare Building
-      #   uses: microsoft/setup-msbuild@v1 
-      # - name: Restore NuGet
-      #   run: nuget restore
+        
       - name: Building
         run: dotnet build -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
       - name: Unit Tests
         id: unit-tests
-        #run: vstest.console.exe **\bin\**\*.UnitTests.dll **\bin\**\*.Tests.dll **\bin\**\*Tests.dll /logger:trx # https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022
         run: dotnet test --filter TestCategory!=IntegrationTest --logger \"trx;logfilename=unitTestResults.trx\" --collect \"XPlat Code Coverage\" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
         continue-on-error: true
       - name: Analyze
@@ -113,7 +97,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
             dotnet tool install --global dotnet-sonarscanner
-            dotnet sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**.trx"
+            dotnet sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.lowerCaseOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**.trx"
             dotnet build -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
