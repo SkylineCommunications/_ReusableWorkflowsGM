@@ -83,7 +83,7 @@ jobs:
           dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
 
       - name: Install NuGetToggleOnBuild
-        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
 
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
