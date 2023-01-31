@@ -94,8 +94,14 @@ jobs:
                myfile.write("lowerCaseOwner=" + str.lower("${{ inputs.owner }}"))
         shell: python
         
+      - name: Find .sln file
+        id: findSlnFile        
+        run: |
+          echo solutionFilePath=$(find . -type f -name '*.sln') >> $GITHUB_OUTPUT
+        shell: bash  
+
       - name: Building
-        run: dotnet build --configuration Release -nodeReuse:false
+        run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
 
       - name: Find created nuget
         id: findcreatednuget        
@@ -123,7 +129,7 @@ jobs:
         run: |
             dotnet tool install --global dotnet-sonarscanner
             dotnet sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.lowerCaseOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**.trx"
-            dotnet build -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
+            dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
 
