@@ -79,6 +79,7 @@ jobs:
         shell: bash    
 
       - uses: actions/upload-artifact@v3
+      # only works if theres one .nupkg present currently
         with:
           name: NugetPackages
           path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
@@ -87,6 +88,7 @@ jobs:
         run: NuGetToggleOnBuild --setToActive false --workspace ${{ github.workspace }} --onlyOnConfiguredNuGet false
 
       - name: Unit Tests
+      # when not using MSTest you'll need to install coverlet.collector nuget in your test solutions
         id: unit-tests
         run: dotnet test "${{ steps.findSlnFile.outputs.solutionFilePath }}" --filter TestCategory!=IntegrationTest --logger "trx;logfilename=unitTestResults.trx" --collect "XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
         continue-on-error: true
@@ -215,7 +217,7 @@ jobs:
           echo nugetPackageName=$(find . -type f -name '*.nupkg') >> $GITHUB_OUTPUT
         shell: bash
         
-#     - name: Push to NuGet.org
-#         run: |
-#         dotnet nuget push "${{ steps.findcreatednuget.outputs.nugetPackageName }}" --api-key ${{ secrets.nugetApiKey }} --source https://api.nuget.org/v3/index.json
-#         shell: bash
+      - name: Push to NuGet.org
+        run: |
+         dotnet nuget push "${{ steps.findcreatednuget.outputs.nugetPackageName }}" --api-key ${{ secrets.nugetApiKey }} --source https://api.nuget.org/v3/index.json
+        shell: bash
