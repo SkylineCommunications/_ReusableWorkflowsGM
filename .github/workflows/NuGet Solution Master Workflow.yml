@@ -62,8 +62,8 @@ jobs:
           java-version: 11
           distribution: 'zulu'
 
-      # not working debug this later - name: Install NuGetToggleOnBuild
-      #   run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
+      - name: Install NuGetToggleOnBuild
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
       
       - name: Find .sln file
         id: findSlnFile        
@@ -85,8 +85,8 @@ jobs:
           name: NugetPackages
           path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
 
-      # not working debug this later - name: Disable NuGet Creation on Subsequent Builds
-      #   run: dotnet NuGetToggleOnBuild --setToActive false --workspace ${{ github.workspace }} --onlyOnConfiguredNuGet false
+      - name: Disable NuGet Creation on Subsequent Builds
+        run: dotnet NuGetToggleOnBuild --setToActive false --workspace ${{ github.workspace }} --onlyOnConfiguredNuGet false
 
       - name: Unit Tests
         id: unit-tests
