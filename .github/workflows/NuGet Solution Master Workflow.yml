@@ -62,12 +62,29 @@ jobs:
 
       - name: Install NuGetToggleOnBuild
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
-      
+
+      - name: Install NuGetPreBuildApplyTagOrBranch
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPreBuildApplyBranchOrTag --global --version 1.0.1-1.0.0.X.7
+
+      - name: Install NuGetValidateSkylineSpecifications
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetValidateSkylineSpecifications --global --version 1.0.1-1.0.0.X.5
+
       - name: Find .sln file
         id: findSlnFile        
         run: |
           echo solutionFilePath=$(find . -type f -name '*.sln') >> $GITHUB_OUTPUT
         shell: bash  
+
+      - name: Validate NuGet Metadata
+        run: NuGetValidateSkylineSpecifications --workspace ${{ github.workspace }}
+
+      - name: Apply Branch for pre-release NuGet
+        if: inputs.referenceType == 'branch'
+        run: NuGetPreBuildApplyTagOrBranch --workspace ${{ github.workspace }} --tag " " --branch ${{ inputs.referenceName }} --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
+
+      - name: Apply Tag for Release NuGet
+        if: inputs.referenceType == 'tag'
+        run: NuGetPreBuildApplyTagOrBranch --workspace ${{ github.workspace }} --tag ${{ inputs.referenceName }} --branch " " --build ${{ inputs.runNumber }} "_NuGetResults" "${{ github.workspace }}/_NuGetResults"
 
       - name: Building
         run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
