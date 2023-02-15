@@ -63,7 +63,7 @@ jobs:
       - name: Install NuGetToggleOnBuild
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
 
-      - name: Install NuGetPreBuildApplyTagOrBranch
+      - name: Install NuGetPreBuildApplyBranchOrTag
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPreBuildApplyBranchOrTag --global --version 1.0.1-1.0.0.X.7
 
       - name: Install NuGetValidateSkylineSpecifications
@@ -80,7 +80,7 @@ jobs:
 
       - name: Apply Branch for pre-release NuGet
         if: inputs.referenceType == 'branch'
-        run: NuGetPreBuildApplyTagOrBranch --workspace ${{ github.workspace }} --tag " " --branch ${{ inputs.referenceName }} --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag " " --branch ${{ inputs.referenceName }} --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
 
       - name: Apply Tag for Release NuGet
         if: inputs.referenceType == 'tag'
