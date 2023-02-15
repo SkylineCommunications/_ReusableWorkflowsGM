@@ -84,7 +84,7 @@ jobs:
 
       - name: Apply Tag for Release NuGet
         if: inputs.referenceType == 'tag'
-        run: NuGetPreBuildApplyTagOrBranch --workspace ${{ github.workspace }} --tag ${{ inputs.referenceName }} --branch " " --build ${{ inputs.runNumber }} "_NuGetResults" "${{ github.workspace }}/_NuGetResults"
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag ${{ inputs.referenceName }} --branch " " --build ${{ inputs.runNumber }} "_NuGetResults" "${{ github.workspace }}/_NuGetResults"
 
       - name: Building
         run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
