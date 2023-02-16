@@ -92,7 +92,7 @@ jobs:
       - name: Find created nuget
         id: findcreatednuget        
         run: |
-          echo nugetPackageName=$(find . -type f -name '*.nupkg') >> $GITHUB_OUTPUT
+          echo nugetPackageName=$(find _NuGetResults -type f -name '*.nupkg') >> $GITHUB_OUTPUT
         shell: bash    
 
       - uses: actions/upload-artifact@v3
