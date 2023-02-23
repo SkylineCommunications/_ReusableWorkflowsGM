@@ -64,7 +64,7 @@ jobs:
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
 
       - name: Install NuGetPreBuildApplyBranchOrTag
-        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPreBuildApplyBranchOrTag --global --version 1.0.1-1.0.0.X.8
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPreBuildApplyBranchOrTag --global
 
       - name: Install NuGetValidateSkylineSpecifications
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetValidateSkylineSpecifications --global
