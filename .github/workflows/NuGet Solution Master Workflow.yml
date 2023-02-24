@@ -80,11 +80,11 @@ jobs:
 
       - name: Apply Branch and output path for pre-release NuGet
         if: inputs.referenceType == 'branch'
-        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag " " --branch ${{ inputs.referenceName }} --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag " " --branch "${{ inputs.referenceName }}" --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
 
       - name: Apply Tag and output path for Release NuGet
         if: inputs.referenceType == 'tag'
-        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag ${{ inputs.referenceName }} --branch " " --build ${{ inputs.runNumber }} "_NuGetResults" "${{ github.workspace }}/_NuGetResults"
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag "${{ inputs.referenceName }}" --branch " " --build ${{ inputs.runNumber }} "_NuGetResults" "${{ github.workspace }}/_NuGetResults"
 
       - name: Building
         run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
@@ -143,8 +143,8 @@ jobs:
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
 
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
+      - name: SonarCloud Quality Gate check
+        id: sonarcloud-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
           scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
@@ -157,15 +157,15 @@ jobs:
       - name: Quality Gate
         id: quality-step
         run: |
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             print("Quality gate failed due to:")
           if "${{ steps.unit-tests.outcome }}" == "failure":
             print("- Test failures")
-          if "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure":
+          if "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure":
             print("- Could not retrieve SonarCloud quality gate status")
-          if "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             print("- Code analysis quality gate failed")
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             exit(1)
         shell: python
 
