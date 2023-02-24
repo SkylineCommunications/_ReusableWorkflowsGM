@@ -62,27 +62,37 @@ jobs:
 
       - name: Install NuGetToggleOnBuild
         run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetToggleOnBuild --global
-      
+
+      - name: Install NuGetPreBuildApplyBranchOrTag
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPreBuildApplyBranchOrTag --global
+
+      - name: Install NuGetValidateSkylineSpecifications
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetValidateSkylineSpecifications --global
+
       - name: Find .sln file
         id: findSlnFile        
         run: |
           echo solutionFilePath=$(find . -type f -name '*.sln') >> $GITHUB_OUTPUT
         shell: bash  
 
+      - name: Validate NuGet Metadata
+        run: NuGetValidateSkylineSpecifications --workspace ${{ github.workspace }}
+
+      - name: Apply Branch and output path for pre-release NuGet
+        if: inputs.referenceType == 'branch'
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag " " --branch "${{ inputs.referenceName }}" --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
+
+      - name: Apply Tag and output path for Release NuGet
+        if: inputs.referenceType == 'tag'
+        run: NuGetPreBuildApplyBranchOrTag --workspace ${{ github.workspace }} --tag "${{ inputs.referenceName }}" --branch " " --build ${{ inputs.runNumber }} --nugetResultFolder "${{ github.workspace }}/_NuGetResults"
+
       - name: Building
         run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
 
-      - name: Find created nuget
-        id: findcreatednuget        
-        run: |
-          echo nugetPackageName=$(find . -type f -name '*.nupkg') >> $GITHUB_OUTPUT
-        shell: bash    
-
       - uses: actions/upload-artifact@v3
-      # only works if theres one .nupkg present currently
         with:
           name: NugetPackages
-          path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
+          path: "${{ github.workspace }}/_NuGetResults"
 
       - name: Disable NuGet Creation on Subsequent Builds
         run: NuGetToggleOnBuild --setToActive false --workspace ${{ github.workspace }} --onlyOnConfiguredNuGet false
@@ -133,8 +143,8 @@ jobs:
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
 
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
+      - name: SonarCloud Quality Gate check
+        id: sonarcloud-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
           scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
@@ -147,15 +157,15 @@ jobs:
       - name: Quality Gate
         id: quality-step
         run: |
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             print("Quality gate failed due to:")
           if "${{ steps.unit-tests.outcome }}" == "failure":
             print("- Test failures")
-          if "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure":
+          if "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure":
             print("- Could not retrieve SonarCloud quality gate status")
-          if "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             print("- Code analysis quality gate failed")
-          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
+          if "${{ steps.unit-tests.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outcome }}" == "failure" or "${{ steps.sonarcloud-quality-gate-check.outputs.quality-gate-status }}" == "FAILED":
             exit(1)
         shell: python
 
@@ -170,11 +180,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: NugetPackages
+          path: _NuGetResults
           
       - name: Find Nuget
         id: findcreatednuget        
         run: |
-          echo nugetPackageName=$(find . -type f -name '*.nupkg') >> $GITHUB_OUTPUT
+          IFS=$'\n'
+          echo nugetPackageName=$(find _NuGetResults -type f -name '*.nupkg') >> $GITHUB_OUTPUT
+          unset IFS
         shell: bash  
         
       - name: Download Encrypted Signature File
@@ -191,13 +204,18 @@ jobs:
     
       - name: Sign NuGet Package
         run: |
-          dotnet nuget sign "${{ steps.findcreatednuget.outputs.nugetPackageName }}" --certificate-path "Skyline.pfx" --timestamper "http://timestamp.comodoca.com/rfc3161" --certificate-password ${{ secrets.pfxPassword }}
+          IFS=$'\n'
+          for i in ${{ steps.findcreatednuget.outputs.nugetPackageName }}; 
+          do
+              dotnet nuget sign "$i" --certificate-path "Skyline.pfx" --timestamper "http://timestamp.comodoca.com/rfc3161" --certificate-password ${{ secrets.pfxPassword }}
+          done
+          unset IFS    
         shell: bash
         
       - uses: actions/upload-artifact@v3
         with:
           name: NugetPackages
-          path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
+          path: "${{ github.workspace }}/_NuGetResults"
 
   push:
     if: inputs.referenceType == 'tag'
@@ -205,19 +223,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: sign
     steps:
-      - name: Download Signed NuGet
-        id: downloadSignedNuGet
+      - name: Download Unsigned NuGet
+        id: downloadUnsignedNuget
         uses: actions/download-artifact@v3
         with:
           name: NugetPackages
+          path: _NuGetResults
           
       - name: Find Nuget
         id: findcreatednuget        
         run: |
-          echo nugetPackageName=$(find . -type f -name '*.nupkg') >> $GITHUB_OUTPUT
-        shell: bash
+          IFS=$'\n'
+          echo nugetPackageName=$(find _NuGetResults -type f -name '*.nupkg') >> $GITHUB_OUTPUT
+          unset IFS
+        shell: bash  
         
       - name: Push to NuGet.org
         run: |
-         dotnet nuget push "${{ steps.findcreatednuget.outputs.nugetPackageName }}" --api-key ${{ secrets.nugetApiKey }} --source https://api.nuget.org/v3/index.json
+          IFS=$'\n'
+          for i in ${{ steps.findcreatednuget.outputs.nugetPackageName }}; 
+          do
+              dotnet nuget push "${{ steps.findcreatednuget.outputs.nugetPackageName }}" --api-key ${{ secrets.nugetApiKey }} --source https://api.nuget.org/v3/index.json
+          done
+          unset IFS        
         shell: bash
