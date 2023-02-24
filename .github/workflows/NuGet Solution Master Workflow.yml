@@ -89,18 +89,6 @@ jobs:
       - name: Building
         run: dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" --configuration Release -nodeReuse:false
 
-      # - name: Find created nuget
-      #   id: findcreatednuget        
-      #   run: |
-      #     echo nugetPackageName=$(find _NuGetResults -type f -name '*.nupkg') >> $GITHUB_OUTPUT
-      #   shell: bash    
-
-      # - uses: actions/upload-artifact@v3
-      # # only works if theres one .nupkg present currently
-      #   with:
-      #     name: NugetPackages
-      #     path: "${{ steps.findcreatednuget.outputs.nugetPackageName }}"
-
       - uses: actions/upload-artifact@v3
         with:
           name: NugetPackages
