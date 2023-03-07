@@ -101,11 +101,12 @@ jobs:
 
       - name: Check NuGet packages.config usage
         run: |
-          output=$(dotnet NuGetPackageConfigDetector --workspace ${{ github.workspace }})
+          output=$(dotnet NuGetPackageConfigDetector --workspace "${{ github.workspace }}")
           if [[ -n "$output" ]]; then
             echo "Repository contains projects using packages.config ($output). Please migrate the nugets from packages.config to packagereference."
             exit 1
-          fi     
+          fi  
+        shell: bash
       - name: Prepare Building
         uses: microsoft/setup-msbuild@v1 
       - name: Restore NuGet
