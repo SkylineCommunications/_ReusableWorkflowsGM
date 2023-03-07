@@ -82,6 +82,8 @@ jobs:
       - name: Install TestProjectDetector
         run: |
           dotnet tool install --tool-path .\.tools\TestProjectDetector Skyline.DataMiner.CICD.Tools.TestProjectDetector --version 1.0.1-Alpha
+      - name: Install NuGetPackageConfigDetector
+        run: dotnet tool install Skyline.DataMiner.CICD.Tools.NuGetPackageConfigDetector --global
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
         run: |
@@ -96,6 +98,14 @@ jobs:
       #   run: echo "todo"
       # - name: Prepare Solution
       #   run: echo "todo"
+
+      - name: Check NuGet packages.config usage
+        run: |
+          output=$(dotnet NuGetPackageConfigDetector --workspace ${{ github.workspace }})
+          if [[ -n "$output" ]]; then
+            echo "Repository contains projects using packages.config ($output). Please migrate the nugets from packages.config to packagereference."
+            exit 1
+          fi     
       - name: Prepare Building
         uses: microsoft/setup-msbuild@v1 
       - name: Restore NuGet
