@@ -101,7 +101,7 @@ jobs:
 
       - name: Check NuGet packages.config usage
         run: |
-          output=$(dotnet NuGetPackageConfigDetector --workspace "${{ github.workspace }}")
+          output=$(NuGetPackageConfigDetector --workspace "${{ github.workspace }}")
           if [[ -n "$output" ]]; then
             echo "Repository contains projects using packages.config ($output). Please migrate the nugets from packages.config to packagereference."
             exit 1
