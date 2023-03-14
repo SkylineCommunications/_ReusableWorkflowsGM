@@ -121,8 +121,8 @@ jobs:
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
-          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
-          
+          dotnet tool install dotnet-sonarscanner --global
+
       - name: Prepare SonarCloud Variables
         id: prepSonarCloudVar
         run: |
@@ -131,11 +131,13 @@ jobs:
           with open(env_file, "a") as myfile:
                myfile.write("lowerCaseOwner=" + str.lower("${{ inputs.owner }}"))
         shell: python
+
       - name: Get SonarCloud Status
         id: get-sonarcloud-status
         run: |
           echo "sonarCloudProjectStatus=$(curl https://${{ secrets.SONAR_TOKEN }}@sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonarCloudProjectName }})" >> $env:GITHUB_OUTPUT
         continue-on-error: true
+
       - name: Trigger Initial Analysis
         if: fromJson(steps.get-sonarcloud-status.outputs.sonarCloudProjectStatus).projectStatus.status  == 'NONE'
         env:
@@ -146,6 +148,7 @@ jobs:
             dotnet build "${{ steps.findSlnFile.outputs.solutionFilePath }}" -p:DefineConstants="DCFv1%3BDBInfo%3BALARM_SQUASHING" --configuration Release -nodeReuse:false
             dotnet sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
+        
       - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
