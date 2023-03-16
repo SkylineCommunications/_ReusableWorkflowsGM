@@ -112,11 +112,11 @@ jobs:
       - name: Restore NuGet
         run: nuget restore
       - name: Building
-        run: msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release  "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
+        run: msbuild.exe "FOX Integration.sln" /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release  "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls" # /verbosity:minimal
       - name: Run Test Project Detector
         id: detect-unit-tests
         run: |
-          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath AutomationScript.sln)" >> $env:GITHUB_OUTPUT
+          echo "testProjectDetectionOutput=$(.\.tools\TestProjectDetector\TestprojectDetector.exe --solutionFilePath 'FOX Integration.sln')" >> $env:GITHUB_OUTPUT
       - name: Test Project Detector Output
         if: fromJson(steps.detect-unit-tests.outputs.testProjectDetectionOutput).Error  != null
         run: |
@@ -164,7 +164,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
             .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
-            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls"
+            msbuild.exe "FOX Integration.sln" /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls"
             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
       - name: Analyze
@@ -173,7 +173,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
             .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ inputs.sonarCloudProjectName }}" /o:"${{ env.cleanOwner }}" /d:sonar.login="${{ secrets.sonarCloudToken }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
-            msbuild.exe AutomationScript.sln /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls"
+            msbuild.exe "FOX Integration.sln" /clp:ErrorsOnly /fileLogger /flp:errorsonly /nologo /t:Clean,Restore,Build /p:Configuration=Release "/p:DefineConstants=`"DCFv1;DBInfo;ALARM_SQUASHING`"" /p:ReferencePath="${{ github.workspace }}\Dlls"
             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.sonarCloudToken }}"
         continue-on-error: true
       - name: SonarQube Quality Gate check
@@ -232,7 +232,7 @@ jobs:
         uses: nuget/setup-nuget@v1.1.1
       
       - name: NuGet restore solution
-        run: nuget restore "AutomationScript.sln" -OutputDirectory ${{ github.workspace }}/packages
+        run: nuget restore "FOX Integration.sln" -OutputDirectory ${{ github.workspace }}/packages
 
       - name: (Development) Upload artifact Package
         if: inputs.referenceType == 'branch'
@@ -247,7 +247,7 @@ jobs:
           # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
           api-key: ${{ secrets.api-key }}
           # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
-          solution-path: ./AutomationScript.sln
+          solution-path: ./FOX Integration.sln
           # The chosen name of the artifact. E.g. MyName.
           artifact-name: ${{ inputs.repository }} ${{ inputs.referenceName }}_B${{ inputs.runNumber }}
           # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
@@ -265,7 +265,7 @@ jobs:
           # The API-key generated in the DCP Admin app as authentication for a certain DataMiner System. E.g. g597e77412e34297b827c2570a8fa2bc
           api-key: ${{ secrets.api-key }}
           # The path to the .sln file of the solution. Atm only DataMiner Automation Script solutions are supported. E.g ./Example/Script.sln.
-          solution-path: ./AutomationScript.sln
+          solution-path: ./FOX Integration.sln
           # The chosen name of the artifact. E.g. MyName.
           artifact-name: ${{ env.GITHUB_REPOSITORY }} ${{ inputs.referenceName }}
           # The version number for the artifact (format A.B.C.D). E.g. 1.0.1.1
